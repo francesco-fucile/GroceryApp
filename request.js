@@ -45,11 +45,9 @@ async function getIngredients(recipeId) {
 	return await Promise.all((await notion.pages.retrieve({ page_id: recipeId }))
 		.properties.Ingredienti.relation
 		.map(async relation =>
-			await notion.blocks.retrieve({ block_id: relation.id }).then(async (result) => {
-				return {
-					ingredientName: result.child_page.title,
-				}
-			})))
+			await notion.blocks.retrieve({ block_id: relation.id }).then(async (result) =>
+				result.child_page.title,
+			)))
 }
 
 // filter object for keys.
