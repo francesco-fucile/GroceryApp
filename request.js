@@ -14,26 +14,21 @@ async function build() {
 		results.first_menu_db = await notion.databases.query({ database_id: results.first_menu_blocks.results[0].id });
 		// extract meals for the first day dinner
 		results.first_day_dinner_first_meal = await notion.blocks.retrieve({ block_id: results.first_menu_db.results[0].properties.Cena.relation[0].id })
-		// map meals for the first day dinner
+		// map meals for the day meals
 		results.meals_map = await Promise.all(results.first_menu_db.results.map(async day => day.properties.Name.title[0]?.plain_text)
-			.map( async day => {
+			.map(async day => {
 				return {
-					[await day]:
-					await Promise.all(results.first_menu_db.results[0].properties.Cena.relation.map(
+					[await day]: {
+						Cena:
+							await Promise.all(results.first_menu_db.results[0].properties.Cena.relation.map(
+								async relation => await notion.blocks.retrieve({ block_id: relation.id }).then((result) => result.child_page.title)
+							)),
+						Pranzo: await Promise.all(results.first_menu_db.results[0].properties.Pranzo.relation.map(
 							async relation => await notion.blocks.retrieve({ block_id: relation.id }).then((result) => result.child_page.title)
-						))
+						)),
+					}
 				}
-			}))
-		// {
-		// return {
-		// return day.properties.Name.title[0]
-		// [day.properties.Name.title[0].text.content]:
-		// 	await Promise.all(results.first_menu_db.results[0].properties.Cena.relation.map(
-		// 		async relation => await notion.blocks.retrieve({ block_id: relation.id }).then((result) => result.child_page.title)
-		// 	))
-		// }
-		// }
-
+				}))
 	} catch (e) {
 		console.log("Failed", e)
 	} finally {
