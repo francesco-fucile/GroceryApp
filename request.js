@@ -19,21 +19,22 @@ async function build() {
 			.map(async day => {
 				return {
 					[await day]: {
-						Cena:
-							await Promise.all(results.first_menu_db.results[0].properties.Cena.relation.map(
-								async relation => await notion.blocks.retrieve({ block_id: relation.id }).then((result) => result.child_page.title)
-							)),
-						Pranzo: await Promise.all(results.first_menu_db.results[0].properties.Pranzo.relation.map(
-							async relation => await notion.blocks.retrieve({ block_id: relation.id }).then((result) => result.child_page.title)
-						)),
+						Pranzo: await getCourses("Pranzo"),
+						Cena: await getCourses("Cena")
 					}
 				}
-				}))
+			}))
 	} catch (e) {
 		console.log("Failed", e)
 	} finally {
 		console.log(JSON.stringify(results, null, 2))
 	}
+}
+
+// given the name of a meal, retrieve its courses
+async function getCourses(meal) {
+	return await Promise.all(results.first_menu_db.results[0].properties[meal].relation.map(
+		async relation => await notion.blocks.retrieve({ block_id: relation.id }).then((result) => result.child_page.title)))
 }
 
 build().then(console.log(''))
