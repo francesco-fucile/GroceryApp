@@ -32,23 +32,24 @@ async function build() {
 // given the name of a meal, retrieve its courses.
 async function getCourses(day, meal) {
 	return await Promise.all(day.properties[meal].relation.map(async relation =>
-		await notion.blocks.retrieve({ block_id: relation.id }).then( async (result) => {
+		await notion.blocks.retrieve({ block_id: relation.id }).then(async (result) => {
 			return {
 				recipeName: result.child_page.title,
-				recipeId: await getIngredients(relation.id)
+				ingredients: await getIngredients(relation.id)
 			}
 		})))
 }
 
 // given the id of a recipe, retrieve its ingredients.
 async function getIngredients(recipeId) {
-	return await notion.blocks.retrieve({ block_id: recipeId })
-	// .then((result) => {
-	// 		return {
-	// 			recipeName: result.child_page.title,
-	// 			recipeId: relation.id
-	// 		}
-	// 	})
+	return await Promise.all((await notion.pages.retrieve({ page_id: recipeId }))
+		.properties.Ingredienti.relation
+		.map(async relation =>
+			await notion.blocks.retrieve({ block_id: relation.id }).then(async (result) => {
+				return {
+					ingredientName: result.child_page.title,
+				}
+			})))
 }
 
 // filter object for keys.
