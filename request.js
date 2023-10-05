@@ -15,12 +15,10 @@ async function build() {
 		// build day-pranzo/cena map.
 		results['day-pranzo/cena'] = await Promise.all(reduceObject(results.first_menu_db, ['results'])
 			.results.map(result => reduceObject(result, 'properties'))
-			.map(async entry => {
+			.map(async day => {
 				return {
-					day: entry.properties.Name.title[0].plain_text,
-					pranzo:  await Promise.all(entry.properties.Pranzo.relation.map( async relation =>
-						await notion.blocks.retrieve({ block_id: relation.id }).then((result) => result.child_page.title)
-					)),
+					day: day.properties.Name.title[0].plain_text,
+					pranzo:  await getCourses(day, 'Pranzo')
 				}
 			}))
 
@@ -32,9 +30,9 @@ async function build() {
 }
 
 // given the name of a meal, retrieve its courses.
-async function getCourses(meal) {
-	return await Promise.all(results.first_menu_db.results[0].properties[meal].relation.map(
-		async relation => await notion.blocks.retrieve({ block_id: relation.id }).then((result) => result.child_page.title)))
+async function getCourses(day, meal) {
+	return await Promise.all(day.properties[meal].relation.map( async relation =>
+		await notion.blocks.retrieve({ block_id: relation.id }).then((result) => result.child_page.title)))
 }
 
 // filter object for keys.
