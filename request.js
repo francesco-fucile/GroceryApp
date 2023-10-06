@@ -24,7 +24,14 @@ async function build() {
 					pranzo: await getCourses(day, 'Pranzo')
 				}
 			}))
-
+		// extract all ingredients.
+		results.grocery_list = []
+		// add all ingredients.
+		results['day-pranzo/cena'].forEach(day => {
+			day.pranzo.forEach(recipe => results.grocery_list.push(recipe.ingredients.map(ingredient => ingredient.ingredientName)))
+		})
+		// flatten and remove duplicates, null values.
+		results.grocery_list = [...new Set(results.grocery_list.flat())]
 	} catch (e) {
 		console.log("Failed", e)
 	} finally {
@@ -64,6 +71,11 @@ function reduceObject(object, allowedFields) {
 		}
 		return newObj;
 	}, {});
+}
+
+function extractIngredients(accumulator, currentValue, index) {
+	output = accumulator.append(currentValue.pranzo)
+	return output
 }
 
 build().then(console.log(''))
