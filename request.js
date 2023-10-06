@@ -77,9 +77,4 @@ function reduceObject(object, allowedFields) {
 	}, {});
 }
 
-function extractIngredients(accumulator, currentValue, index) {
-	output = accumulator.append(currentValue.pranzo)
-	return output
-}
-
 build().then()
