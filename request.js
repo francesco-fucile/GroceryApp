@@ -21,7 +21,8 @@ async function build() {
 			.map(async day => {
 				return {
 					day: day.properties.Name.title[0]?.plain_text,
-					pranzo: await getCourses(day, 'Pranzo')
+					pranzo: await getCourses(day, 'Pranzo'),
+					cena: await getCourses(day, 'Cena')
 				}
 			}))
 		// extract all ingredients.
@@ -29,6 +30,7 @@ async function build() {
 		// add all ingredients.
 		results['day-pranzo/cena'].forEach(day => {
 			day.pranzo.forEach(recipe => results.grocery_list.push(recipe.ingredients.map(ingredient => ingredient.ingredientName)))
+			day.cena.forEach(recipe => results.grocery_list.push(recipe.ingredients.map(ingredient => ingredient.ingredientName)))
 		})
 		// flatten and remove duplicates, null values.
 		results.grocery_list = [...new Set(results.grocery_list.flat())]
