@@ -20,7 +20,7 @@ async function build() {
 			.results.map(result => reduceObject(result, 'properties'))
 			.map(async day => {
 				return {
-					day: day.properties.Name.title[0].plain_text,
+					day: day.properties.Name.title[0]?.plain_text,
 					pranzo: await getCourses(day, 'Pranzo')
 				}
 			}))
