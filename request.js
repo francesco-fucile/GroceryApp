@@ -5,11 +5,14 @@ const notion = new Client({ auth: process.env.NOTION_API_KEY });
 async function build() {
 	try {
 		// retrieve menu list.
+		// TODO: menus database name as input.
+		// menus database id
 		const databaseId = 'dba2b39a6cb74962a01c998c9c78e229';
 		results = {}
 		results.menus = await notion.databases.query({ database_id: databaseId, });
 		// list first menu blocks.
-		results.first_menu_blocks = await notion.blocks.children.list({ block_id: results.menus.results[0].id });
+		results.selected_menu_id = results.menus.results.filter(db => db.properties.Name.title[0]?.plain_text == process.argv[2])[0].id;
+		results.first_menu_blocks = await notion.blocks.children.list({ block_id: results.selected_menu_id });
 		// read the day-meal-recipes database.
 		results.first_menu_db = await notion.databases.query({ database_id: results.first_menu_blocks.results[0].id });
 		// build day-pranzo/cena map.
