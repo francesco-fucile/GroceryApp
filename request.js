@@ -82,4 +82,4 @@ function extractIngredients(accumulator, currentValue, index) {
 	return output
 }
 
-build().then(console.log(''))
+build().then()
