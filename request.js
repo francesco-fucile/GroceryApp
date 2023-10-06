@@ -1,5 +1,4 @@
 const { Client } = require('@notionhq/client');
-const { error } = require('console');
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
 async function build() {
@@ -34,10 +33,13 @@ async function build() {
 		})
 		// flatten and remove duplicates, null values.
 		results.grocery_list = [...new Set(results.grocery_list.flat())]
+		console.log(results.grocery_list.slice(1, -1).join("\n"))
 	} catch (e) {
 		console.log("Failed", e)
 	} finally {
-		console.log(JSON.stringify(results, null, 2))
+		if (Boolean(process.env.DEBUG)) {
+			console.log(JSON.stringify(results, null, 2))
+		}
 	}
 }
 
@@ -81,5 +83,3 @@ function extractIngredients(accumulator, currentValue, index) {
 }
 
 build().then(console.log(''))
-
-
