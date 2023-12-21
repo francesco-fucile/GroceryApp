@@ -14,7 +14,7 @@ async function build() {
 		// retrieve menu list.
 		// TODO: menus database name as input.
 		// menus database id
-		const databaseId = 'dba2b39a6cb74962a01c998c9c78e229';
+		const databaseId = process.env.NOTION_DB_ID;
 		const targetMenu = process.argv[2]
 		results = {}
 		results.menus = await notion.databases.query({ database_id: databaseId, });
