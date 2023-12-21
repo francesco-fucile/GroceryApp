@@ -16,7 +16,6 @@ async function build() {
 		// menus database id
 		const databaseId = 'dba2b39a6cb74962a01c998c9c78e229';
 		const targetMenu = process.argv[2]
-		logger.debug(JSON.stringify({ 'targetMenu': targetMenu, 'databaseId': databaseId }))
 		results = {}
 		results.menus = await notion.databases.query({ database_id: databaseId, });
 		// list first menu blocks.
@@ -47,9 +46,7 @@ async function build() {
 	} catch (e) {
 		console.log("Failed", e)
 	} finally {
-		if (Boolean(process.env.DEBUG)) {
-			console.log(JSON.stringify(results, null, 2))
-		}
+		logger.debug(JSON.stringify(results, null, 2))
 	}
 }
 
