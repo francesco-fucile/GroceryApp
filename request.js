@@ -42,7 +42,7 @@ async function build() {
 		})
 		// flatten and remove duplicates, null values.
 		results.grocery_list = [...new Set(results.grocery_list.flat())]
-		console.log(results.grocery_list.slice(1, -1).join("\n"))
+		console.log(results.grocery_list.filter(x => x != "" && x != "\n").join("\n"))
 	} catch (e) {
 		console.log("Failed", e)
 	} finally {
