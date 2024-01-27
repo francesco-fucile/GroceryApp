@@ -9,6 +9,7 @@ async function build() {
 		const databaseId = 'dba2b39a6cb74962a01c998c9c78e229';
 		results = {}
 		results.menus = await notion.databases.query({ database_id: databaseId, });
+		debugMode = process.argv[3] === '-d'
 		// list first menu blocks.
 		results.selected_menu_id = results.menus.results.filter(db => db.properties.Name.title[0]?.plain_text == process.argv[2])[0].id;
 		results.first_menu_blocks = await notion.blocks.children.list({ block_id: results.selected_menu_id });
@@ -33,9 +34,13 @@ async function build() {
 		})
 		// flatten and remove duplicates, null values.
 		results.grocery_list = [...new Set(results.grocery_list.flat())]
-		console.log(results.grocery_list.slice(1, -1).join("\n"))
+		if (debugMode) {
+			console.log(JSON.stringify(results, null, 2))
+		} else {
+			console.log(results.grocery_list.slice(1, -1).join("\n"))
+		}
 	} catch (e) {
-		console.log("Failed", e)
+		console.error(e)
 	} finally {
 		if (Boolean(process.env.DEBUG)) {
 			console.log(JSON.stringify(results, null, 2))
