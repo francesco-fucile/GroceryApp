@@ -37,7 +37,7 @@ async function build() {
 		if (debugMode) {
 			console.log(JSON.stringify(results, null, 2))
 		} else {
-			console.log(results.grocery_list.slice(1, -1).join("\n"))
+			console.log(results.grocery_list.join("\n"))
 		}
 	} catch (e) {
 		console.error(e)
