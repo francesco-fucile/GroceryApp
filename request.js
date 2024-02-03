@@ -17,10 +17,12 @@ async function build() {
 		const databaseId = process.env.NOTION_DB_ID;
 		const targetMenu = process.argv[2]
 		results = {}
-		results.menus = await notion.databases.query({ database_id: databaseId, });
+		results.timestamp = new Date(Date.now()).toLocaleString()
+		results.targetMenu = targetMenu
+		results.menus = await notion.databases.query({ database_id: databaseId });
 		// list first menu blocks.
-		results.selected_menu_id = results.menus.results.filter(db => db.properties.Name.title[0]?.plain_text == targetMenu)[0].id;
-		results.first_menu_blocks = await notion.blocks.children.list({ block_id: results.selected_menu_id });
+		results.selected_menu = results.menus.results.filter(db => db.properties.Name.title[0]?.plain_text === targetMenu)[0];
+		results.first_menu_blocks = await notion.blocks.children.list({ block_id: results.selected_menu.id });
 		// read the day-meal-recipes database.
 		results.first_menu_db = await notion.databases.query({ database_id: results.first_menu_blocks.results[0].id });
 		// build day-pranzo/cena map.
