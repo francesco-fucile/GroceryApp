@@ -46,11 +46,12 @@ async function build() {
 		// flatten and remove duplicates, null values.
 		results.grocery_list = [...new Set(results.grocery_list.flat())]
 		results.output_text = results.grocery_list.filter(x => x != "" && x != "\n").join("\n")
-		console.log(results.output_text)
+		if(debugMode != 'true') {
+			console.log(results.output_text)
+		}
 	} catch (e) {
 		results.error = e
 	} finally {
-		console.log('debugMode', debugMode)
 		if(debugMode == 'true') {
 			console.log(JSON.stringify(results, null, 2))
 		}
@@ -76,7 +77,8 @@ async function getIngredients(recipeId) {
 			await notion.pages.retrieve({ page_id: relation.id }).then(async (result) => {
 				return {
 					ingredientName: result.properties.Name.title[0].plain_text,
-					size: result.properties.Size.number
+					size: result.properties.Size.number,
+					classe: result.properties.classe?.select?.name
 				}
 			})))
 }
