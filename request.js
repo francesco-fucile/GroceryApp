@@ -10,13 +10,14 @@ const logger = winston.createLogger({
 })
 
 async function build() {
+	results = {}
+	const debugMode = process.env.DEBUG_MODE;
 	try {
 		// retrieve menu list.
 		// TODO: menus database name as input.
 		// menus database id
 		const databaseId = process.env.NOTION_DB_ID;
 		const targetMenu = process.argv[2]
-		results = {}
 		results.timestamp = new Date(Date.now()).toLocaleString()
 		results.targetMenu = targetMenu
 		results.menus = await notion.databases.query({ database_id: databaseId });
@@ -44,11 +45,15 @@ async function build() {
 		})
 		// flatten and remove duplicates, null values.
 		results.grocery_list = [...new Set(results.grocery_list.flat())]
-		console.log(results.grocery_list.filter(x => x != "" && x != "\n").join("\n"))
+		results.output_text = results.grocery_list.filter(x => x != "" && x != "\n").join("\n")
+		console.log(results.output_text)
 	} catch (e) {
-		console.log("Failed", e)
+		results.error = e
 	} finally {
-		logger.debug(JSON.stringify(results, null, 2))
+		console.log('debugMode', debugMode)
+		if(debugMode == 'true') {
+			console.log(JSON.stringify(results, null, 2))
+		}
 	}
 }
 
