@@ -18,6 +18,8 @@ async function build() {
 		// menus database id
 		const databaseId = process.env.NOTION_DB_ID;
 		const targetMenu = process.argv[2]
+		const includeAll = process.env.INCLUDE_ALL;
+		results.includeAll = includeAll
 		results.timestamp = new Date(Date.now()).toLocaleString()
 		results.targetMenu = targetMenu
 		results.menus = await notion.databases.query({ database_id: databaseId });
@@ -39,9 +41,10 @@ async function build() {
 		// extract all ingredients.
 		results.grocery_list = []
 		// add all ingredients.
+		const classFiltering = (ingredient) => ingredient.classe == 'menu' || includeAll == 'true'
 		results['day-pranzo/cena'].forEach(day => {
-			day.pranzo.forEach(recipe => results.grocery_list.push(recipe.ingredients.map(ingredient => ingredient.ingredientName)))
-			day.cena.forEach(recipe => results.grocery_list.push(recipe.ingredients.map(ingredient => ingredient.ingredientName)))
+			day.pranzo.forEach(recipe => results.grocery_list.push(recipe.ingredients.filter(classFiltering).map(ingredient => ingredient.ingredientName)))
+			day.cena.forEach(recipe => results.grocery_list.push(recipe.ingredients.filter(classFiltering).map(ingredient => ingredient.ingredientName)))
 		})
 		// flatten and remove duplicates, null values.
 		results.grocery_list = [...new Set(results.grocery_list.flat())]
