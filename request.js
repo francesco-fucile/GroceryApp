@@ -13,15 +13,13 @@ async function build() {
 	results = {}
 	const debugMode = process.env.DEBUG_MODE;
 	try {
-		// retrieve menu list.
-		// TODO: menus database name as input.
-		// menus database id
-		const databaseId = process.env.NOTION_DB_ID;
+		const databaseId = process.env.NOTION_DB_ID; // menus database id
 		const targetMenu = process.argv[2]
 		const includeAll = process.env.INCLUDE_ALL;
 		results.includeAll = includeAll
 		results.timestamp = new Date(Date.now()).toLocaleString()
 		results.targetMenu = targetMenu
+		// retrieve menu list.
 		results.menus = await notion.databases.query({ database_id: databaseId });
 		// list first menu blocks.
 		results.selected_menu = results.menus.results.filter(db => db.properties.Name.title[0]?.plain_text === targetMenu)[0];
