@@ -40,9 +40,16 @@ async function build() {
 		results.grocery_list = []
 		// add all ingredients.
 		const classFiltering = (ingredient) => ingredient.classe == 'menu' || includeAll == 'true'
+		const idProperty = process.env.ID_PROPERTY || "ingredientName"
+		console.log("process.env.ID_PROPERTY ", process.env.ID_PROPERTY);
+		results.idProperty = idProperty;
+		// results['day-pranzo/cena'].forEach(day => {
+		// 	day.pranzo.forEach(recipe => results.grocery_list.push(recipe.ingredients.filter(classFiltering).map(ingredient => ingredient.ingredientName)))
+		// 	day.cena.forEach(recipe => results.grocery_list.push(recipe.ingredients.filter(classFiltering).map(ingredient => ingredient.ingredientName)))
+		// })
 		results['day-pranzo/cena'].forEach(day => {
-			day.pranzo.forEach(recipe => results.grocery_list.push(recipe.ingredients.filter(classFiltering).map(ingredient => ingredient.ingredientName)))
-			day.cena.forEach(recipe => results.grocery_list.push(recipe.ingredients.filter(classFiltering).map(ingredient => ingredient.ingredientName)))
+			day.pranzo.forEach(recipe => results.grocery_list.push(recipe.ingredients.filter(classFiltering).map(ingredient => ingredient["sainsburys_Id"] || "not found" )))
+			day.cena.forEach(recipe => results.grocery_list.push(recipe.ingredients.filter(classFiltering).map(ingredient => ingredient["sainsburys_Id"] || "not found" )))
 		})
 		// flatten and remove duplicates, null values.
 		results.grocery_list = [...new Set(results.grocery_list.flat())]
@@ -76,8 +83,11 @@ async function getIngredients(recipeId) {
 		.properties.Ingredienti.relation
 		.map(async relation =>
 			await notion.pages.retrieve({ page_id: relation.id }).then(async (result) => {
+				// console.log(JSON.stringify(result))
+				// console.log(result.properties.Sainsburys_ID?.rich_text[0].plain_text)
 				return {
 					ingredientName: result.properties.Name.title[0].plain_text,
+					sainsburys_Id: result.properties.Sainsburys_ID?.rich_text[0]?.plain_text || result.properties.Name.title[0].plain_text,
 					size: result.properties.Size.number,
 					classe: result.properties.classe?.select?.name
 				}
